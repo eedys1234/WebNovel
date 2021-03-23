@@ -1,5 +1,6 @@
 package com.javairus.webnovel.web;
 
+import com.javairus.webnovel.domain.novels.NovelValidator;
 import com.javairus.webnovel.service.NovelDetailService;
 import com.javairus.webnovel.web.dto.novels.NovelDetailSaveRequestDto;
 import com.javairus.webnovel.web.dto.novels.NovelDetailUpdateRequestDto;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import javax.xml.ws.Response;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -23,14 +23,22 @@ public class NovelDetailController {
 
     private final NovelDetailService novelDetailService;
 
+    private final NovelValidator novelValidator;
+
     @PostMapping("/detail")
-    public ResponseEntity<ApiResponse> save(@Valid @RequestBody NovelDetailSaveRequestDto requestDto,
+    public ResponseEntity<ApiResponse> save(@RequestBody @Valid NovelDetailSaveRequestDto requestDto,
                                             UriComponentsBuilder uriComponentsBuilder,
                                             Errors errors) {
 
         //validation check
         if(errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
 
+        novelValidator.validate(requestDto, errors);
+
+        if(errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
         }
 
         Long id = novelDetailService.save(requestDto);
@@ -42,7 +50,18 @@ public class NovelDetailController {
 
     @PutMapping("/detail/{id}")
     public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id,
-                                              @RequestBody NovelDetailUpdateRequestDto requestDto) {
+                                              @RequestBody @Valid NovelDetailUpdateRequestDto requestDto,
+                                              Errors errors) {
+        //validation check
+        if(errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        novelValidator.validate(requestDto, errors);
+
+        if(errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         return new ResponseEntity<>(ApiResponse.of(200, "", novelDetailService.update(id, requestDto)),
                 HttpStatus.OK);

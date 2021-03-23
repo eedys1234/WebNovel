@@ -25,7 +25,6 @@ public class NovelDetailRepositoryTest {
     @After
     public void cleanUp() {
         novelMasterRepository.deleteAll();
-        novelDetailRepository.deleteAll();
     }
 
     @Test
@@ -42,7 +41,6 @@ public class NovelDetailRepositoryTest {
         String detailTitle = "";
         String content = "소설의 시작은 다음과 같다.";
         String reserve = "0";
-        LocalDateTime reserveDate = LocalDateTime.now();
 
         //웹소설 데이터 insert
         NovelMaster novelMaster = novelMasterRepository.save(NovelMaster.builder()
@@ -61,7 +59,6 @@ public class NovelDetailRepositoryTest {
                                                                     .detailTitle(detailTitle)
                                                                     .content(content)
                                                                     .reserve(reserve)
-                                                                    .reserveDate(reserveDate)
                                                                     .build();
 
         NovelDetail novelDetail = requestDto.toEntity();
@@ -69,13 +66,70 @@ public class NovelDetailRepositoryTest {
 
         //when
         NovelDetail saveNovelDetail = novelDetailRepository.save(novelDetail);
+        novelMaster.addDetail();
 
         //then
         assertThat(saveNovelDetail.getNovelDetailKey()).isGreaterThan(0L);
         assertThat(saveNovelDetail.getDetailTitle()).isEqualTo(detailTitle);
         assertThat(saveNovelDetail.getContent()).isEqualTo(content);
         assertThat(saveNovelDetail.getReserve()).isEqualTo(reserve);
-        assertThat(saveNovelDetail.getReserveDate()).isEqualTo(reserveDate);
+        assertThat(novelMaster.getNovelNumbers()).isGreaterThan(0);
     }
 
+    @Test
+    public void 웹소설_편수_수정하기() {
+
+        //given
+        String novelName = "테스트 웹소설";
+        String subTitle = "테스트";
+        String thumnailPath = "";
+        String thumnailName = "";
+        String monopoly = "0";
+        String summary = "요약된";
+
+        String detailTitle = "";
+        String content = "소설의 시작은 다음과 같다.";
+        String reserve = "0";
+
+        String updatedContent = "소설내용 변경";
+        String updatedReserve = "1";
+        LocalDateTime updatedReserveDate = LocalDateTime.now().plusHours(10);
+
+        //웹소설 데이터 insert
+        NovelMaster novelMaster = novelMasterRepository.save(NovelMaster.builder()
+                .novelName(novelName)
+                .subTitle(subTitle)
+                .categoryCode(NovelMaster.CategoryCodeType.C0001)
+                .thumnailPath(thumnailPath)
+                .thumnailName(thumnailName)
+                .ageCode(NovelMaster.AgeCodeType.GREATED)
+                .novelCode(NovelMaster.NovelCodeType.GENERAL)
+                .monopoly(monopoly)
+                .summary(summary).build());
+
+        //웹소설 편수 insert
+
+        NovelDetail novelDetail = NovelDetail.builder()
+                                .detailTitle(detailTitle)
+                                .content(content)
+                                .reserve(reserve)
+                                .build();
+        novelDetail.setNovelMaster(novelMaster);
+        novelMaster.addDetail();
+
+        NovelDetail saveNovelDetail = novelDetailRepository.save(novelDetail);
+
+        //when
+        saveNovelDetail.update(NovelDetail.builder()
+                .content(updatedContent)
+                .reserve(updatedReserve)
+                .reserveDate(updatedReserveDate)
+                .build());
+
+        //then
+        assertThat(saveNovelDetail.getContent()).isEqualTo(updatedContent);
+        assertThat(saveNovelDetail.getReserve()).isEqualTo(updatedReserve);
+        assertThat(saveNovelDetail.getReserveDate()).isEqualTo(updatedReserveDate);
+        assertThat(novelMaster.getNovelNumbers()).isGreaterThan(0);
+    }
 }

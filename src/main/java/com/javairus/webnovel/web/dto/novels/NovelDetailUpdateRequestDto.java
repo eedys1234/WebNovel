@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -18,6 +19,7 @@ public class NovelDetailUpdateRequestDto {
     private String content;
 
     @NotBlank(message = "예약여부는 필수 입력값입니다.")
+    @Size(min = 1, max = 1)
     private String reserve;
 
     private LocalDateTime reserveDate;

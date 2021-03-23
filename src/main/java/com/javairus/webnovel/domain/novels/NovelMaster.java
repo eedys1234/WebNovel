@@ -158,6 +158,7 @@ public class NovelMaster extends BaseEntity {
         this.novelDetails = new ArrayList<>();
     }
 
+    //ModelMapper 사용고려?
     public void update(NovelMaster novelMaster) {
 
         if(!Objects.isNull(novelMaster.getNovelName())) {
@@ -204,5 +205,9 @@ public class NovelMaster extends BaseEntity {
             this.status = novelMaster.getStatus();
         }
 
+    }
+
+    public void addDetail() {
+        this.novelNumbers++;
     }
 }

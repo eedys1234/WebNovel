@@ -5,7 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -18,9 +20,10 @@ public class NovelDetailSaveRequestDto {
     private String content;
 
     @NotBlank(message = "예약여부는 필수 입력값입니다.")
+    @Size(min = 1, max = 1)
     private String reserve;
 
-    private LocalDateTime reserveDate;
+    private LocalDateTime reserveDate; //optional
 
     @Builder
     public NovelDetailSaveRequestDto(String detailTitle, String content, String reserve, LocalDateTime reserveDate) {
@@ -28,7 +31,7 @@ public class NovelDetailSaveRequestDto {
         this.detailTitle = detailTitle;
         this.content = content;
         this.reserve = reserve;
-        this.reserveDate = reserveDate;
+        this.reserveDate = reserveDate; //optional
     }
 
     public NovelDetail toEntity() {

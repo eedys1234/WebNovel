@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -21,7 +22,12 @@ public class NovelMasterController {
 
     @PostMapping("/master")
     public ResponseEntity<ApiResponse> save(@RequestBody NovelMasterSaveRequestDto requestDto,
-                                            UriComponentsBuilder uriComponentsBuilder) {
+                                            UriComponentsBuilder uriComponentsBuilder,
+                                            Errors errors) {
+
+        if(errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         Long id = novelMasterService.save(requestDto);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -32,7 +38,14 @@ public class NovelMasterController {
     }
 
     @PutMapping("/master/{id}")
-    public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id, @RequestBody NovelMasterUpdateRequestDto requestDto) {
+    public ResponseEntity<ApiResponse> update(@PathVariable("id") Long id,
+                                              @RequestBody NovelMasterUpdateRequestDto requestDto,
+                                              Errors errors) {
+
+        if(errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
+
         return new ResponseEntity<>(ApiResponse.of(200, "", novelMasterService.update(id, requestDto)),
                 HttpStatus.OK);
     }
