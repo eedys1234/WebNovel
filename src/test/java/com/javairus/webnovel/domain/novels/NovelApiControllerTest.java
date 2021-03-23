@@ -1,5 +1,6 @@
 package com.javairus.webnovel.domain.novels;
 
+import com.javairus.webnovel.web.dto.novels.NovelDetailSaveRequestDto;
 import com.javairus.webnovel.web.dto.novels.NovelMasterSaveRequestDto;
 import com.javairus.webnovel.web.dto.novels.NovelMasterUpdateRequestDto;
 import com.javairus.webnovel.web.response.ApiResponse;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -180,5 +182,54 @@ public class NovelApiControllerTest {
         List<NovelMaster> novelMasters = novelMasterRepository.findAll();
         assertThat(novelMasters.size()).isEqualTo(0);
 
+    }
+
+    @Test
+    public void 웹소설_단편을_등록하다() throws Exception {
+
+        //given
+        String novelName = "테스트_웹소설";
+        String subTitle = "부제";
+        String thumnailPath = "";
+        String thumnailName = "";
+        String summary = "요약";
+        String monopoly = "0";
+        NovelMaster.CategoryCodeType categoryCode = NovelMaster.CategoryCodeType.C0001;
+        NovelMaster.AgeCodeType ageCode = NovelMaster.AgeCodeType.GREATED;
+        NovelMaster.NovelCodeType novelCode = NovelMaster.NovelCodeType.GENERAL;
+
+        String detailTitle = "";
+        String content = "소설을 시작합니다.";
+        String reserve = "1";
+        LocalDateTime reserveDate = LocalDateTime.now().plusHours(10);
+
+        NovelMaster novelMaster = novelMasterRepository.save(NovelMaster.builder()
+                                            .novelName(novelName)
+                                            .subTitle(subTitle)
+                                            .thumnailPath(thumnailPath)
+                                            .thumnailName(thumnailName)
+                                            .summary(summary)
+                                            .categoryCode(categoryCode)
+                                            .ageCode(ageCode)
+                                            .novelCode(novelCode)
+                                            .monopoly(monopoly)
+                                            .build());
+
+        NovelDetailSaveRequestDto requestDto = NovelDetailSaveRequestDto.builder()
+                .detailTitle(detailTitle)
+                .content(content)
+                .reserve(reserve)
+                .reserveDate(reserveDate)
+                .build();
+
+        Long id = novelMaster.getNovelKey();
+        String url = "http://localhost:" + port + "/api/v1/novels/detail/" + id;
+
+        //when
+        ResponseEntity<ApiResponse> entity = restTemplate.postForEntity(url, requestDto, ApiResponse.class);
+
+        //then
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat((int)entity.getBody().getObject()).isGreaterThan(0);
     }
 }

@@ -25,8 +25,9 @@ public class NovelDetailController {
 
     private final NovelValidator novelValidator;
 
-    @PostMapping("/detail")
-    public ResponseEntity<ApiResponse> save(@RequestBody @Valid NovelDetailSaveRequestDto requestDto,
+    @PostMapping("/detail/{novelMasterId}")
+    public ResponseEntity<ApiResponse> save(@PathVariable("novelMasterId") Long novelMasterId,
+                                            @RequestBody @Valid NovelDetailSaveRequestDto requestDto,
                                             UriComponentsBuilder uriComponentsBuilder,
                                             Errors errors) {
 
@@ -41,7 +42,7 @@ public class NovelDetailController {
             return ResponseEntity.badRequest().build();
         }
 
-        Long id = novelDetailService.save(requestDto);
+        Long id = novelDetailService.save(novelMasterId, requestDto);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(uriComponentsBuilder.path("{id}").buildAndExpand(id).toUri());
         return new ResponseEntity<>(ApiResponse.of(200, "", id), httpHeaders, HttpStatus.CREATED);

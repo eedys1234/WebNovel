@@ -25,8 +25,15 @@ public class NovelDetailService {
     private final NovelDetailRepository novelDetailRepository;
 
     @Transactional
-    public Long save(NovelDetailSaveRequestDto requestDto) {
-        return novelDetailRepository.save(requestDto.toEntity()).getNovelDetailKey();
+    public Long save(Long novelMasterId, NovelDetailSaveRequestDto requestDto) {
+
+        NovelMaster novelMaster = novelMasterRepository.findById(novelMasterId)
+                .orElseThrow(()-> new IllegalArgumentException("소설을 찾을 수 없습니다. {id}" + novelMasterId));
+
+        NovelDetail novelDetail = requestDto.toEntity();
+        novelDetail.setNovelMaster(novelMaster);
+
+        return novelDetailRepository.save(novelDetail).getNovelDetailKey();
     }
 
     @Transactional
