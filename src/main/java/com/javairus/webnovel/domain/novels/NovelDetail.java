@@ -4,12 +4,14 @@ package com.javairus.webnovel.domain.novels;
 import com.javairus.webnovel.domain.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
+@NoArgsConstructor
 @Entity
 public class NovelDetail extends BaseEntity {
 
@@ -20,7 +22,7 @@ public class NovelDetail extends BaseEntity {
     @Column(length = 50)
     private String detailTitle;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(length = 1, nullable = false)
