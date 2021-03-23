@@ -28,7 +28,7 @@ public class NovelDetailService {
     public Long save(Long novelMasterId, NovelDetailSaveRequestDto requestDto) {
 
         NovelMaster novelMaster = novelMasterRepository.findById(novelMasterId)
-                .orElseThrow(()-> new IllegalArgumentException("소설을 찾을 수 없습니다. {id}" + novelMasterId));
+                .orElseThrow(()-> new IllegalArgumentException("소설을 찾을 수 없습니다. {id} = " + novelMasterId));
 
         NovelDetail novelDetail = requestDto.toEntity();
         novelDetail.setNovelMaster(novelMaster);
@@ -40,7 +40,7 @@ public class NovelDetailService {
     public Long update(Long id, NovelDetailUpdateRequestDto requestDto) {
 
         NovelDetail novelDetail = novelDetailRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("소설을 찾을 수 없습니다. {id}" + id));
+                .orElseThrow(()-> new IllegalArgumentException("소설을 찾을 수 없습니다. {id} = " + id));
 
         novelDetail.update(requestDto.toEntity());
 
@@ -51,7 +51,7 @@ public class NovelDetailService {
     public List<NovelDetailResponseDto> gets(Long novelMasterId, Integer pageNo, Integer offset) {
 
         NovelMaster novelMaster = novelMasterRepository.findById(novelMasterId)
-                .orElseThrow((()-> new IllegalArgumentException("소설을 찾을 수 없습니다. {id}" + novelMasterId)));
+                .orElseThrow((()-> new IllegalArgumentException("소설을 찾을 수 없습니다. {id} = " + novelMasterId)));
 
         Pageable pageable = PageRequest.of(pageNo-1, offset, Sort.by("regDate").descending());
 

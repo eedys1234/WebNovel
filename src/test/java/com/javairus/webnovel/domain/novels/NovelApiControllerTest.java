@@ -1,6 +1,7 @@
 package com.javairus.webnovel.domain.novels;
 
 import com.javairus.webnovel.web.dto.novels.NovelDetailSaveRequestDto;
+import com.javairus.webnovel.web.dto.novels.NovelDetailUpdateRequestDto;
 import com.javairus.webnovel.web.dto.novels.NovelMasterSaveRequestDto;
 import com.javairus.webnovel.web.dto.novels.NovelMasterUpdateRequestDto;
 import com.javairus.webnovel.web.response.ApiResponse;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.xml.ws.Response;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,11 +37,8 @@ public class NovelApiControllerTest {
     @Autowired
     private NovelMasterRepository novelMasterRepository;
 
-//    @Before
-//    public void setUp() throws Exception {
-//        restTemplate = new TestRestTemplate();
-//    }
-
+    @Autowired
+    private NovelDetailRepository novelDetailRepository;
     @After
     public void tearDown() throws Exception {
         novelMasterRepository.deleteAll();
@@ -231,5 +230,72 @@ public class NovelApiControllerTest {
         //then
         assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat((int)entity.getBody().getObject()).isGreaterThan(0);
+    }
+
+    @Test
+    public void 웹소설_단편을_수정하다() throws Exception {
+
+        //given
+        String novelName = "테스트_웹소설";
+        String subTitle = "부제";
+        String thumnailPath = "";
+        String thumnailName = "";
+        String summary = "요약";
+        String monopoly = "0";
+        NovelMaster.CategoryCodeType categoryCode = NovelMaster.CategoryCodeType.C0001;
+        NovelMaster.AgeCodeType ageCode = NovelMaster.AgeCodeType.GREATED;
+        NovelMaster.NovelCodeType novelCode = NovelMaster.NovelCodeType.GENERAL;
+
+        String detailTitle = "";
+        String content = "소설을 시작합니다.";
+        String reserve = "0";
+
+        String updatedContent = "소설 내용 수정할게요.";
+        String updatedReserve = "1";
+        LocalDateTime updatedReserveDate = LocalDateTime.now().plusHours(10);
+
+        NovelMaster novelMaster = novelMasterRepository.save(NovelMaster.builder()
+                .novelName(novelName)
+                .subTitle(subTitle)
+                .thumnailPath(thumnailPath)
+                .thumnailName(thumnailName)
+                .summary(summary)
+                .categoryCode(categoryCode)
+                .ageCode(ageCode)
+                .novelCode(novelCode)
+                .monopoly(monopoly)
+                .build());
+
+        NovelDetail novelDetail = NovelDetail.builder()
+                                            .detailTitle(detailTitle)
+                                            .content(content)
+                                            .reserve(reserve)
+                                            .build();
+        novelDetail.setNovelMaster(novelMaster);
+        NovelDetail saveNovelDetail = novelDetailRepository.save(novelDetail);
+
+        NovelDetailUpdateRequestDto requestDto = NovelDetailUpdateRequestDto.builder()
+                                                                            .content(updatedContent)
+                                                                            .reserve(updatedReserve)
+                                                                            .reserveDate(updatedReserveDate)
+                                                                            .build();
+
+        HttpEntity<NovelDetailUpdateRequestDto> httpEntity = new HttpEntity<>(requestDto);
+        Long id = saveNovelDetail.getNovelDetailKey();
+
+        String url = "http://localhost:" + port + "/api/v1/novels/detail/" + id;
+
+        //when
+        ResponseEntity<ApiResponse> entity = restTemplate.exchange(url, HttpMethod.PUT, httpEntity, ApiResponse.class);
+
+        //then
+        assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat((int)entity.getBody().getObject()).isGreaterThan(0);
+
+        List<NovelDetail> novelDetails = novelDetailRepository.findAll();
+
+        assertThat(novelDetails.get(0).getContent()).isEqualTo(updatedContent);
+        assertThat(novelDetails.get(0).getReserve()).isEqualTo(updatedReserve);
+        assertThat(novelDetails.get(0).getReserveDate()).isEqualTo(updatedReserveDate);
     }
 }

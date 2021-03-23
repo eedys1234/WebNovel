@@ -72,7 +72,7 @@ public class NovelDetail extends BaseEntity {
             this.reserve = novelDetail.getReserve();
         }
 
-        if(!Objects.isNull(novelDetail.getReserveDate())) {
+        if(!Objects.isNull(novelDetail.getReserveDate()) && "1".equals(this.reserve)) {
             this.reserveDate = novelDetail.getReserveDate();
         }
 
