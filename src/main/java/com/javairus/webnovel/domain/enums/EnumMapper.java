@@ -1,7 +1,8 @@
 package com.javairus.webnovel.domain.enums;
 
+import com.javairus.webnovel.domain.novels.NovelMaster;
+
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,8 @@ public class EnumMapper {
 
     public EnumMapper() {
         //여러 인스턴스에서 사용되더라도(여러 서버에서 사용) 데이터를 조회하는 것이기 때문에 동기화작업을 하지 않아도 됨
-        store = new HashMap<>();
+        //순서를 보장
+        store = new LinkedHashMap<>();
     }
 
     private List<EnumValue> toEnumValues(Class<? extends EnumModel> e) {

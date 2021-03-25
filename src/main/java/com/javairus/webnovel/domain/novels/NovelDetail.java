@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -35,6 +37,9 @@ public class NovelDetail extends BaseEntity {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "novelKey")
     private NovelMaster novelMaster;
+
+    @OneToMany(mappedBy = "novelDetail")
+    private List<NovelReply> novelReplys = new ArrayList<>();
 
     @Builder
     public NovelDetail(String detailTitle, String content, String reserve, LocalDateTime reserveDate) {

@@ -13,12 +13,12 @@ public class ApiResponse {
 
     private int status;
     private String message;
-    private Object object;
+    private Object body;
 
     private ApiResponse(int status, String message, Object object) {
         this.status = status;
         this.message = message;
-        this.object = object;
+        this.body = object;
     }
 
     public static ApiResponse of(int status, String message) {

@@ -298,4 +298,13 @@ public class NovelApiControllerTest {
         assertThat(novelDetails.get(0).getReserve()).isEqualTo(updatedReserve);
         assertThat(novelDetails.get(0).getReserveDate()).isEqualTo(updatedReserveDate);
     }
+
+    @Test
+    public void 웹소설_카테고리_분류_조회() throws Exception {
+
+        //given
+
+        //when
+        //then
+    }
 }
